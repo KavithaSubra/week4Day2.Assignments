@@ -25,8 +25,6 @@ public static void main(String[] args) throws IOException, InterruptedException 
 		driver.get("https://www.nykaa.com/");
 		driver.manage().window().maximize();
 
-		
-		
 		Actions builder = new Actions(driver);
 		
 		WebElement brands = driver.findElement(By.xpath("//a[text()='brands']"));
@@ -45,24 +43,32 @@ public static void main(String[] args) throws IOException, InterruptedException 
 	    Thread.sleep(1000);
 	    driver.findElement(By.xpath("//span[text()='Hair Care']/following-sibling::span")).click();
 	    driver.findElement(By.xpath("//input[contains(@id,'Shampoo')]/following-sibling::label/div[2]")).click();
-
+	    
+	    String filter2 = driver.findElement(By.xpath("//span[@class='filter-value']")).getText();
+		System.out.println(filter2);
 		
-		String filter = driver.findElement(By.xpath("//span[@class='filter-value']")).getText();
-		System.out.println(filter);
+		 Thread.sleep(1000);
 		
 		driver.findElement(By.xpath("//span[text()='Concern']/following-sibling::div/div")).click();
 		driver.findElement(By.xpath("//label[contains(@for,'Color Protection')]/div[2]")).click();
 		
-		String filter2 = driver.findElement(By.xpath("//span[@class='filter-value']")).getText();
-		System.out.println(filter2);
+		List<WebElement> filters = driver.findElements(By.xpath("//span[@class='filter-value']"));
+		System.out.println("Filter values are ");
+		for(WebElement f: filters)
+		{
+			String filterValue=f.getText();
+			System.out.println(filterValue);
+		}
 		
-		driver.findElement(By.xpath("//div[@class='product-listing']//div[contains(@class,'productWrapper')]//a[1]/div[1]/img[@alt = \"L'Oreal Paris Colour Protect Shampoo\"]")).click();
+		Thread.sleep(2000);
+		driver.findElement(By.xpath("//a[contains(@href,'paris-color-protect')]//img[@alt = \"L'Oreal Paris Colour Protect Shampoo\"]")).click();
 		
 		Set<String> windowHandles = driver.getWindowHandles();
 		List<String> windows = new ArrayList<String>(windowHandles);
 		String childWindow = windows.get(1);
 		
 		String title = driver.switchTo().window(childWindow).getTitle();
+		System.out.println(title);
 		
 		WebElement dd1 = driver.findElement(By.xpath("//select[@title = 'SIZE']"));
 		Select dropdown1 = new Select(dd1);
@@ -72,25 +78,35 @@ public static void main(String[] args) throws IOException, InterruptedException 
 		System.out.println(price);
 		
 		driver.findElement(By.xpath("//h1[text()=\"L'Oreal Paris Colour Protect Shampoo\"]/following::span[19]")).click();
-		
+		Thread.sleep(5000);
 		driver.findElement(By.xpath("//span[@class='cart-count']")).click();
 		
-		Set<String> windowHandles1 = driver.getWindowHandles();
-		List<String> windows1 = new ArrayList<String>(windowHandles1);
+		WebElement shoppingBag = driver.findElement(By.xpath("//iframe[@src='/mobileCartIframe?ptype=customIframeCart']"));
+		driver.switchTo().frame(shoppingBag);
+		
+		Thread.sleep(2000);
+		
+		String total = driver.findElement(By.xpath("//span[text()='Grand Total']/following-sibling::div[@class='value']")).getText();
+		System.out.println("Grand Total: "+total);
+		
+		driver.findElement(By.xpath("//span[text()='PROCEED']")).click();
+		
+		List<String> windows1 = new ArrayList<String>(windowHandles);
 		String childWindow1 = windows1.get(1);
 		
 		String title1 = driver.switchTo().window(childWindow1).getTitle();
+		System.out.println(title1);
 		
-		String total = driver.findElement(By.xpath("//div[@class='value medium-strong']")).getText();
-		System.out.println("Grand Total: "+total);
+		driver.switchTo().window(childWindow1);
 		
+		driver.findElement(By.xpath("//button[@class='btn full big']")).click();
 		
+		String grandTotal = driver.findElement(By.xpath("//div[text()='Grand Total']/following-sibling::div/span")).getText();
+		
+		System.out.println("GrandTotal: "+grandTotal);
 		
 		File source = driver.getScreenshotAs(OutputType.FILE);
 		File dest = new File("./images/filter.png");
 		FileUtils.copyFile(source, dest);
-		
-		
-
-}
+	}
 }
